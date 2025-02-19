@@ -1,8 +1,9 @@
-package ProblemaArray;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
-public class EjercicioArrays {
+public class EjercicioArraysOriginal {
     
     public static void main(String[] args) {
         int numAlumnos = 40;
@@ -12,10 +13,6 @@ public class EjercicioArrays {
 		int[] practicas;
 		float[] calificaciones;
 		float[] estadistica;
-		int[] aprobados;
-		int[] suspensos;
-        int maxNota = 0;
-        int minNota = 0;
         int indMaxNota, indMinNota;
         int postEval;
 		double[] calif;
@@ -23,22 +20,21 @@ public class EjercicioArrays {
         for(int i=0; i < control.length; i++){
             control[i] = (int)(Math.random()*11);
         }
+     
         //buscamos al mayor
-        postEval = 11;
-        for(int i=0; i<control.length; i++){
-            int preEval = control[i];
-            if (preEval < postEval){
-                minNota = preEval;
-                postEval = control[i];
+        int maxNota = Integer.MIN_VALUE; 
+        for (int i = 0; i < control.length; i++) {
+            int notaActual = control[i];
+            if (notaActual > maxNota) {
+                maxNota = notaActual; 
             }
         }
         //buscamos al menor
-        postEval = 0;
-        for(int i=0; i<control.length; i++){
-            int preEval = control[i];
-            if (preEval > postEval){
-                maxNota = preEval;
-                postEval = control[i];
+        int minNota = Integer.MAX_VALUE; 
+        for (int i = 0; i < control.length; i++) {
+            int currentNota = control[i];
+            if (currentNota < minNota) {
+                minNota = currentNota; 
             }
         }
         //creamos una lista de los alumnos de la clase
@@ -67,10 +63,7 @@ public class EjercicioArrays {
         //Creamos el vector calificaciones
         calificaciones = new float[numAlumnos];
         for(int i = 0; i<control.length; i++){
-            calificaciones[i] = 
-                    (((float) control[i] 
-                    + (float) practicas[i]) 
-                    / 2);
+            calificaciones[i] = (((float) control[i] + (float) practicas[i])/ 2);
         }
         System.out.println("Prácticas      :" + Arrays.toString(practicas));
         System.out.println("Calificaciones :" + Arrays.toString(calificaciones));
@@ -97,48 +90,28 @@ public class EjercicioArrays {
                 + sol + "%");
         }
         //Aprobados y suspensos
-        aprobados = new int[numAlumnos];
-        suspensos = new int[numAlumnos];
-        int countAprobados = 0;
-        int countSuspensos = 0;
-        for (int i=0; i<numAlumnos; i++){
-            if (calificaciones[i] < 5){
+        int[] aprobados = new int[numAlumnos];
+        int[] suspensos = new int[numAlumnos];
+
+        IntStream.range(0, numAlumnos).forEach(i -> {
+            if (calificaciones[i] < 5) {
                 aprobados[i] = i;
-                countAprobados += 1;
-            }else{ 
+            } else {
                 suspensos[i] = i;
-                countSuspensos += 1;
             }
-        }        
-        System.out.println("Relación de aprobados por nº de lista: " 
-                + Arrays.toString(aprobados));
-        System.out.println("Relación de suspensos por nº de lista: " 
-                + Arrays.toString(suspensos));
-        //Resumen de aprobados y suspensos
-        int i = 0;
-        int x = 0;
-        int[] a = new int[countAprobados];
-        int[] s = new int[countSuspensos];
-        while(i < aprobados.length){
-            if(aprobados[i] != 0){
-                a[x] = aprobados[i];
-                i++;
-                x++;
-            }else{ i++; }
-        }
+        });
+        int countAprobados = (int) IntStream.of(aprobados).filter(n -> n != 0).count();
+        int countSuspensos = (int) IntStream.of(suspensos).filter(n -> n != 0).count();
+
+        System.out.println("Relación de aprobados por nº de lista: " + Arrays.toString(aprobados));
+        System.out.println("Relación de suspensos por nº de lista: " + Arrays.toString(suspensos));
         
-        i = x = 0;
-        while(i < suspensos.length){
-            if(suspensos[i] != 0){
-                s[x] = suspensos[i];
-                i++;
-                x++;
-            }else{ i++; }
-        }
-        System.out.println("Resumen  de aprobados por nº de lista: " 
-                + Arrays.toString(a));
-        System.out.println("Resumen  de aprobados por nº de lista: " 
-                + Arrays.toString(s));
+        //Resumen de aprobados y suspensos
+        int[] a = Arrays.stream(aprobados).filter(n -> n != 0).toArray();//Usamos el filrto para quitar los 0
+        int[] s = Arrays.stream(suspensos).filter(n -> n != 0).toArray();
+
+        System.out.println("Resumen de aprobados por nº de lista: " + Arrays.toString(a));
+        System.out.println("Resumen de suspensos por nº de lista: " + Arrays.toString(s));
     
         /*6. Suponer un vector de Calificaciones de tamaño 40 
         (máximo de alumnos por clase), pero que solo almacena las
